@@ -1,0 +1,185 @@
+﻿<Window x:Class="EnjeksiyonOtomasyon.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Enjeksiyon &amp; Klips Çakma SCADA / HMI Takip Sistemi" Height="850" Width="1280"
+        Background="#121417" WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <!-- Modern Kart Stili -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="#1E2228"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="BorderBrush" Value="#2D323B"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style x:Key="LabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#8C96A5"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="ValueStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+        </Style>
+
+        <!-- Sensör LED Stili (Glowing Efekti) -->
+        <Style x:Key="SensorLedStyle" TargetType="Ellipse">
+            <Setter Property="Width" Value="22"/>
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="Fill" Value="#E74C3C"/>
+            <Setter Property="Stroke" Value="White"/>
+            <Setter Property="StrokeThickness" Value="2"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Üst Kontrol & Sayaç Paneli -->
+            <RowDefinition Height="*"/>    <!-- Makine Şeması & Sensörler -->
+            <RowDefinition Height="170"/>  <!-- Canlı DataGrid Tablosu -->
+            <RowDefinition Height="Auto"/> <!-- Alt Durum Çubuğu -->
+        </Grid.RowDefinitions>
+
+        <!-- ================= 1. ÜST KONTROL VE SAYAÇ PANELİ ================= -->
+        <Grid Grid.Row="0" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="1.3*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- OK ÜRÜN SAYAÇ -->
+            <Border Grid.Column="0" Background="#27AE60" CornerRadius="8" Padding="10,6" Margin="4">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="OK ÜRÜN" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtOkAdet" Text="0" Foreground="White" FontWeight="Bold" FontSize="22" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- NOK ÜRÜN SAYAÇ -->
+            <Border Grid.Column="1" Background="#E74C3C" CornerRadius="8" Padding="10,6" Margin="4">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="NOK ÜRÜN" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="TxtNokAdet" Text="0" Foreground="White" FontWeight="Bold" FontSize="22" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- KONTROL BUTONLARI -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="4">
+                <Button x:Name="BtnBaslat" Content="BAŞLAT" Background="#2980B9" Foreground="White" FontWeight="Bold" 
+                        Padding="12,8" Margin="2" Click="BtnBaslat_Click" Cursor="Hand"/>
+                <Button x:Name="BtnReset" Content="SIFIRLA" Background="#7F8C8D" Foreground="White" FontWeight="Bold" 
+                        Padding="12,8" Margin="2" Click="BtnReset_Click" Cursor="Hand"/>
+            </StackPanel>
+
+            <!-- ENJEKSİYON 1 SÜRESİ -->
+            <Border Grid.Column="3" Style="{StaticResource CardStyle}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="ENJ. 1 (sn)" Style="{StaticResource LabelStyle}"/>
+                    <TextBlock x:Name="TxtEnj1" Text="15" Style="{StaticResource ValueStyle}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- ENJEKSİYON 2 SÜRESİ -->
+            <Border Grid.Column="4" Style="{StaticResource CardStyle}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="ENJ. 2 (sn)" Style="{StaticResource LabelStyle}"/>
+                    <TextBlock x:Name="TxtEnj2" Text="15" Style="{StaticResource ValueStyle}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- SOĞUTMA SÜRESİ -->
+            <Border Grid.Column="5" Style="{StaticResource CardStyle}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="SOĞUTMA (sn)" Style="{StaticResource LabelStyle}"/>
+                    <TextBlock x:Name="TxtSogutma" Text="60" Style="{StaticResource ValueStyle}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- KOYU TEMALI MODEL SEÇİM ALANI -->
+            <Border Grid.Column="6" Style="{StaticResource CardStyle}">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="MODEL SEÇİMİ" Style="{StaticResource LabelStyle}" Margin="0,0,0,4"/>
+                    <ComboBox x:Name="CmbModelSecim" SelectedIndex="0" Height="28" 
+                         Background="#E2E8F0" Foreground="#0F172A" FontWeight="Bold" FontSize="12">
+                        <ComboBoxItem Content="Model 1 - Standart Parça" Foreground="#0F172A"/>
+                        <ComboBoxItem Content="Model 2 - Özel Parça" Foreground="#0F172A"/>
+                    </ComboBox>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ================= 2. TAM EKRAN VE YÜKSEK KALİTELİ MAKİNE ALANI ================= -->
+        <Border Grid.Row="1" Style="{StaticResource CardStyle}" Padding="0" ClipToBounds="True">
+            <Viewbox Stretch="Uniform">
+                <Canvas Width="1000" Height="500">
+    <!-- Arka Plan Makine Görseli -->
+    <Image Source="pack://application:,,,/image/makine.png" Width="1000" Height="500" Stretch="Uniform"/>
+
+    <!-- Boru 1 Sensörü (Üst Sol) -->
+    <Ellipse x:Name="LedSensor1" Style="{StaticResource SensorLedStyle}" Canvas.Left="412" Canvas.Top="182" ToolTip="Boru 1 Sensörü"/>
+
+    <!-- Boru 2 Sensörü (Alt Daire) -->
+    <Ellipse x:Name="LedSensor2" Style="{StaticResource SensorLedStyle}" Canvas.Left="502" Canvas.Top="228" ToolTip="Boru 2 Sensörü"/>
+
+    <!-- Pim Kilidi Sensörü (Üst Sağ Daire) -->
+    <Ellipse x:Name="LedPim" Style="{StaticResource SensorLedStyle}" Canvas.Left="502" Canvas.Top="182" ToolTip="Pim Kilidi"/>
+</Canvas>
+            </Viewbox>
+        </Border>
+
+        <!-- ================= 3. CANLI ÜRETİM TABLOSU (DataGrid) ================= -->
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Margin="0,8,0,8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="CANLI ÜRETİM KAYITLARI (SON İŞLEMLER)" Foreground="#3498DB" FontWeight="Bold" FontSize="11" Margin="4,0,0,4"/>
+
+                <DataGrid x:Name="DgUretimKayitlari" Grid.Row="1" AutoGenerateColumns="False" 
+                          Background="Transparent" RowBackground="#121417" AlternatingRowBackground="#1E2228"
+                          Foreground="White" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#2D323B"
+                          BorderThickness="0" HeadersVisibility="Column" IsReadOnly="True">
+                    <DataGrid.Resources>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#2D323B"/>
+                            <Setter Property="Foreground" Value="White"/>
+                            <Setter Property="FontWeight" Value="Bold"/>
+                            <Setter Property="Padding" Value="6,4"/>
+                        </Style>
+                    </DataGrid.Resources>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+                        <DataGridTextColumn Header="Tarih / Saat" Binding="{Binding KayitTarihi}" Width="160"/>
+                        <DataGridTextColumn Header="Model" Binding="{Binding ModelNo}" Width="80"/>
+                        <DataGridTextColumn Header="Sonuç" Binding="{Binding Sonuc}" Width="80"/>
+                        <DataGridTextColumn Header="Enj 1 (sn)" Binding="{Binding Enjeksiyon1Suresi}" Width="*"/>
+                        <DataGridTextColumn Header="Enj 2 (sn)" Binding="{Binding Enjeksiyon2Suresi}" Width="*"/>
+                        <DataGridTextColumn Header="Soğutma (sn)" Binding="{Binding SogutmaSuresi}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <!-- ================= 4. ALT DURUM BİLGİ ÇUBUĞU ================= -->
+        <Border Grid.Row="3" Background="#0D0E10" CornerRadius="8" Padding="12" BorderBrush="#2D323B" BorderThickness="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="DURUM: " Foreground="#F39C12" FontWeight="Bold" FontSize="18"/>
+                <TextBlock x:Name="TxtDurum" Text="BEKLENİYOR..." Foreground="White" FontWeight="Bold" FontSize="18"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
